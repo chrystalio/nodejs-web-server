@@ -11,15 +11,16 @@ const requestListener = function (req, res) {
     }
 
     if (method === 'POST') {
-        res.end(`<h1>Hello, HTTP Server! [POST]</h1>`);
-    }
+        let body = [];
 
-    if (method === 'PUT') {
-        res.end(`<h1>Hello, HTTP Server! [PUT]</h1>`);
-    }
+        req.on('data', (chunk) => {
+            body.push(chunk);
+        });
 
-    if (method === 'DELETE') {
-        res.end(`<h1>Hello, HTTP Server! [DELETE]</h1>`);
+        req.on('end', () => {
+            body = Buffer.concat(body).toString();
+            res.end(`<h1>Hello, HTTP Server! ${body}</h1>`);
+        });
     }
 };
 
