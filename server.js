@@ -4,24 +4,43 @@ const requestListener = function (req, res) {
     res.setHeader("Content-Type", "text/html");
 
     res.statusCode = 200;
-    const {method} = req;
+    const {method, url} = req;
 
-    if (method === 'GET') {
-        res.end(`<h1>Hello, HTTP Server! [GET]</h1>`);
+    if (url === '/') {
+        if (method === 'GET') {
+            res.end(`<h1>Halo! Ini adalah halaman home</h1>`);
+        } else {
+            res.end(`<h1>Halaman tidak dapat diakses dengan ${method} request</h1>`);
+        }
     }
 
-    if (method === 'POST') {
-        let body = [];
+    if (url === '/about') {
+        if (method === 'GET') {
+            res.end(`<h1>Halo! Ini adalah halaman about</h1>`);
+        } else if (method === 'POST') {
+        }
 
-        req.on('data', (chunk) => {
-            body.push(chunk);
-        });
+        if (url === '/about') {
+            if (method === 'GET') {
+                res.end(`<h1>Halo! Ini adalah halaman about</h1>`);
+            } else if (method === 'POST') {
+                let body = [];
 
-        req.on('end', () => {
-            body = Buffer.concat(body).toString();
-            const { name } = JSON.parse(body);
-            res.end(`<h1>Hello, HTTP Server! ${name}</h1>`);
-        });
+                req.on('data', (chunk) => {
+                    body.push(chunk);
+                });
+
+                req.on('end', () => {
+                    body = Buffer.concat(body).toString();
+                    const {name} = JSON.parse(body);
+                    res.end(`<h1>Hello, ${name}! Ini adalah halaman about</h1>`);
+                });
+            } else {
+                res.end(`<h1>Halaman tidak dapat diakses dengan ${method} request</h1>`);
+            }
+        } else {
+            res.end(`<h1>Halaman Tidak Ditemukan!</h1>`)
+        }
     }
 };
 
