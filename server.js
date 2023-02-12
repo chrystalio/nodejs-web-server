@@ -19,7 +19,8 @@ const requestListener = function (req, res) {
 
         req.on('end', () => {
             body = Buffer.concat(body).toString();
-            res.end(`<h1>Hello, HTTP Server! ${body}</h1>`);
+            const { name } = JSON.parse(body);
+            res.end(`<h1>Hello, HTTP Server! ${name}</h1>`);
         });
     }
 };
