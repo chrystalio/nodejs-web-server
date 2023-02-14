@@ -1,46 +1,55 @@
 const http = require('http');
 
-const requestListener = function (req, res) {
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader('X-Powered-By', 'NodeJS')
+const requestListener = (request, response) => {
+    response.setHeader('Content-Type', 'application/json');
+    response.setHeader('X-Powered-By', 'NodeJS');
 
-    res.statusCode = 200;
-    const {method, url} = req;
+    const { method, url } = request;
 
-    if (url === '/') {
-        if (method === 'GET') {
-            res.statusCode = 200;
-            res.end(`<h1>Halo! Ini adalah halaman home</h1>`);
+    if(url === '/') {
+        if(method === 'GET') {
+            response.statusCode = 200;
+            response.end(JSON.stringify({
+                message: 'Ini adalah homepage',
+            }));
         } else {
-            res.statusCode = 400;
-            res.end(`<h1>Halaman tidak dapat diakses dengan ${method} request</h1>`);
+            response.statusCode = 400;
+            response.end(JSON.stringify({
+                message: `Halaman tidak dapat diakses dengan ${method} request`,
+            }));
         }
-    }
-
-    if (url === '/about') {
-        if (method === 'GET') {
-            res.statusCode = 200;
-            res.end(`<h1>Halo! Ini adalah halaman about</h1>`);
-        } else if (method === 'POST') {
+    } else if(url === '/about') {
+        if(method === 'GET') {
+            response.statusCode = 200;
+            response.end(JSON.stringify({
+                message: 'Halo! Ini adalah halaman about',
+            }));
+        } else if(method === 'POST') {
             let body = [];
 
-            req.on('data', (chunk) => {
+            request.on('data', (chunk) => {
                 body.push(chunk);
             });
 
-            req.on('end', () => {
+            request.on('end', () => {
                 body = Buffer.concat(body).toString();
-                const {name} = JSON.parse(body);
-                res.statusCode = 200;
-                res.end(`<h1>Hello, ${name}! Ini adalah halaman about</h1>`);
+                const { name } = JSON.parse(body);
+                response.statusCode = 200;
+                response.end(JSON.stringify({
+                    message: `Halo, ${name}! Ini adalah halaman about`,
+                }));
             });
         } else {
-            res.statusCode = 400
-            res.end(`<h1>Halaman tidak dapat diakses dengan ${method} request</h1>`);
+            response.statusCode = 400;
+            response.end(JSON.stringify({
+                message: `Halaman tidak dapat diakses menggunakan ${method}, request`
+            }));
         }
     } else {
-        res.statusCode = 400
-        res.end(`<h1>Halaman Tidak Ditemukan!</h1>`)
+        response.statusCode = 404;
+        response.end(JSON.stringify({
+            message: 'Halaman tidak ditemukan!',
+        }));
     }
 };
 
